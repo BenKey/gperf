@@ -13,8 +13,11 @@
 /* Define to the number of bits in type 'ptrdiff_t'. */
 #define BITSIZEOF_PTRDIFF_T @BITSIZEOF_PTRDIFF_T@
 
+#cmakedefine01 HAVE_SIG_ATOMIC_T
 /* Define to the number of bits in type 'sig_atomic_t'. */
-#define BITSIZEOF_SIG_ATOMIC_T @BITSIZEOF_SIG_ATOMIC_T@
+#if HAVE_SIG_ATOMIC_T
+#    define BITSIZEOF_SIG_ATOMIC_T @BITSIZEOF_SIG_ATOMIC_T@
+#endif
 
 /* Define to the number of bits in type 'size_t'. */
 #define BITSIZEOF_SIZE_T @BITSIZEOF_SIZE_T@
@@ -215,15 +218,6 @@
 /* Define to 1 if you have the <crtdefs.h> header file. */
 #cmakedefine01 HAVE_CRTDEFS_H
 
-/* Define to 1 if bool, true and false work as per C2023. */
-#cmakedefine01 HAVE_C_BOOL
-
-/* Define to 1 if the static_assert keyword works. */
-#cmakedefine01 HAVE_C_STATIC_ASSERT
-
-/* Define to 1 if C supports variable-length arrays. */
-#cmakedefine01 HAVE_C_VARARRAYS
-
 /* Define to 1 if you have the declaration of 'ecvt', and to 0 if you don't.
    */
 #cmakedefine01 HAVE_DECL_ECVT
@@ -401,28 +395,6 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #cmakedefine01 HAVE_STRING_H
-
-/* Define to 1 if 'st_atimensec' is a member of 'struct stat'. */
-#cmakedefine01 HAVE_STRUCT_STAT_ST_ATIMENSEC
-
-/* Define to 1 if 'st_atimespec.tv_nsec' is a member of 'struct stat'. */
-#cmakedefine01 HAVE_STRUCT_STAT_ST_ATIMESPEC_TV_NSEC
-
-/* Define to 1 if 'st_atim.st__tim.tv_nsec' is a member of 'struct stat'. */
-#cmakedefine01 HAVE_STRUCT_STAT_ST_ATIM_ST__TIM_TV_NSEC
-
-/* Define to 1 if 'st_atim.tv_nsec' is a member of 'struct stat'. */
-#cmakedefine01 HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
-
-/* Define to 1 if 'st_birthtimensec' is a member of 'struct stat'. */
-#cmakedefine01 HAVE_STRUCT_STAT_ST_BIRTHTIMENSEC
-
-/* Define to 1 if 'st_birthtimespec.tv_nsec' is a member of 'struct stat'. */
-#cmakedefine01 HAVE_STRUCT_STAT_ST_BIRTHTIMESPEC_TV_NSEC
-
-/* Define to 1 if 'st_birthtim.tv_nsec' is a member of 'struct stat'. */
-#cmakedefine01 HAVE_STRUCT_STAT_ST_BIRTHTIM_TV_NSEC
-
 /* Define to 1 if you have the 'symlink' function. */
 #cmakedefine01 HAVE_SYMLINK
 
@@ -453,9 +425,6 @@
 /* Define to 1 if the system has the type 'unsigned long long int'. */
 #cmakedefine01 HAVE_UNSIGNED_LONG_LONG_INT
 
-/* Define if you have a global __progname variable */
-#cmakedefine01 HAVE_VAR___PROGNAME
-
 /* Define to 1 if you have the <wchar.h> header file. */
 #cmakedefine01 HAVE_WCHAR_H
 
@@ -468,12 +437,6 @@
 /* Define if you have the 'wint_t' type. */
 #cmakedefine01 HAVE_WINT_T
 
-/* Define to 1 if O_NOATIME works. */
-#cmakedefine01 HAVE_WORKING_O_NOATIME
-
-/* Define to 1 if O_NOFOLLOW works. */
-#cmakedefine01 HAVE_WORKING_O_NOFOLLOW
-
 /* Define to 1 if you have the <xlocale.h> header file. */
 #cmakedefine01 HAVE_XLOCALE_H
 
@@ -483,9 +446,6 @@
 /* Define to 1 if you have the '_set_invalid_parameter_handler' function. */
 #cmakedefine01 HAVE__SET_INVALID_PARAMETER_HANDLER
 
-/* Define to 1 if ctype.h defines __header_inline. */
-#cmakedefine01 HAVE___HEADER_INLINE
-
 #cmakedefine01 USE_SIMPLE_MEMSET_EXPLICIT_DECL
 #if USE_SIMPLE_MEMSET_EXPLICIT_DECL
 #  if HAVE_STDDEF_H
@@ -494,6 +454,37 @@
   /* Do not force processing of string.in.h just to declare a single function. */
   void* memset_explicit(void* s, int c, size_t len);
 #endif
+
+#if (defined(_MSC_VER) && (_MSC_VER >= 1900) && HAVE_SYS_STAT_H)
+#  define _CRT_INTERNAL_NONSTDC_NAMES 1
+#  include <sys/stat.h>
+
+#  ifndef S_ISCHR
+#   ifdef S_IFCHR
+#    define S_ISCHR(m) (((m) & S_IFMT) == S_IFCHR)
+#   else
+#    define S_ISCHR(m) 0
+#   endif
+#  endif
+
+#  ifndef S_ISDIR
+#   ifdef S_IFDIR
+#    define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#   else
+#    define S_ISDIR(m) 0
+#   endif
+#  endif
+
+#  ifndef S_ISREG
+#   ifdef S_IFREG
+#    define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#   else
+#    define S_ISREG(m) 0
+#   endif
+#  endif
+
+#endif
+
 
 /* Please see the Gnulib manual for how to use these macros.
 
@@ -602,9 +593,6 @@
 # define _GL_INLINE_HEADER_END
 #endif
 
-/* Define to 1 if lseek does not detect pipes. */
-#cmakedefine01 LSEEK_PIPE_BROKEN
-
 /* Use GNU style printf and scanf.  */
 #ifndef __USE_MINGW_ANSI_STDIO
 # cmakedefine __USE_MINGW_ANSI_STDIO
@@ -616,9 +604,6 @@
 
 /* Define to 1 if realloc should abort upon undefined behaviour. */
 #cmakedefine01 NEED_SANITIZED_REALLOC
-
-/* Define to 1 if open() fails to recognize a trailing slash. */
-#cmakedefine01 OPEN_TRAILING_SLASH_BUG
 
 /* Name of package */
 #if !defined(PACKAGE)
@@ -907,10 +892,6 @@
 
 /* Define to 1 if the system <stdint.h> predates C++11. */
 #cmakedefine01 __STDC_LIMIT_MACROS
-
-/* Define to 1 if C does not support variable-length arrays, and if the
-   compiler does not already define this. */
-#cmakedefine01 __STDC_NO_VLA__
 
 /* The _GL_ASYNC_SAFE marker should be attached to functions that are
    signal handlers (for signals other than SIGABRT, SIGPIPE) or can be
