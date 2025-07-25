@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake")
 
+add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+
 include(gperf_package_info)
 include(gperf_configure_tests)
 
@@ -21,6 +23,8 @@ configure_file(cmake/src_config.h.in src/config.h @ONLY)
 set(LIBGP_SOURCES lib/gl_hash_map.c lib/hash.cc lib/read-file.c lib/xsize.c)
 if(NOT HAVE_ERROR AND WIN32)
   list(APPEND LIBGP_SOURCES cmake/error_windows.c)
+elseif(NOT HAVE_ERROR AND NOT WIN32)
+  list(APPEND LIBGP_SOURCES lib/error.c)  
 endif()
 if(NOT HAVE_FTELLO)
   if(NOT HAVE_STDCKDINT_H)
