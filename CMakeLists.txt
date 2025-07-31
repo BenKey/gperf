@@ -7,6 +7,7 @@ if("c_std_23" IN_LIST CMAKE_C_COMPILE_FEATURES)
 elseif("c_std_17" IN_LIST CMAKE_C_COMPILE_FEATURES)
   set(CMAKE_C_STANDARD 17)
 endif()
+message(STATUS "CMAKE_C_STANDARD is '${CMAKE_C_STANDARD}'.")
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Set C++ standard if needed
@@ -17,13 +18,18 @@ elseif("cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
 elseif("cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
   set(CMAKE_CXX_STANDARD 27)
 endif()
+message(STATUS "CMAKE_CXX_STANDARD is '${CMAKE_CXX_STANDARD}'.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake")
 
-add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE=1 _CRT_SECURE_NO_DEPRECATE=1 _CRT_SECURE_NO_WARNINGS=1)
 if(MSVC)
-  add_compile_options(/nologo)
+  add_definitions(/D_UNICODE /DUNICODE)
+  remove_definitions(/D_MBCS)
+  add_compile_options(/nologo /W3)
+else()
+  add_compile_options(-Wall -Wextra -pedantic)
 endif()
 
 include(gperf_package_info)

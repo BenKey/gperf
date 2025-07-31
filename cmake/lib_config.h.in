@@ -5,10 +5,8 @@
 # pragma GCC diagnostic ignored "-Wtrailing-whitespace"
 #endif
 
-
 /* Witness that <config.h> has been included.  */
 #define _GL_CONFIG_H_INCLUDED 1
-
 
 /* Define to the number of bits in type 'ptrdiff_t'. */
 #cmakedefine BITSIZEOF_PTRDIFF_T @BITSIZEOF_PTRDIFF_T@
@@ -447,19 +445,37 @@
 /* Define to 1 if you have the '_set_invalid_parameter_handler' function. */
 #cmakedefine01 HAVE__SET_INVALID_PARAMETER_HANDLER
 
-#cmakedefine01 USE_SIMPLE_MEMSET_EXPLICIT_DECL
-#if USE_SIMPLE_MEMSET_EXPLICIT_DECL
-#  if HAVE_STDDEF_H
-#    include <stddef.h>
-#  endif
+#if !HAVE_MEMSET_EXPLICIT
+#  cmakedefine01 DECL_MEMSET_EXPLICIT_IN_CONFIG_H
+#  if DECL_MEMSET_EXPLICIT_IN_CONFIG_H
+#    if HAVE_STDDEF_H
+#      include <stddef.h>
+#    endif /* HAVE_STDDEF_H */
   /* Do not force processing of string.in.h just to declare a single function. */
   void* memset_explicit(void* s, int c, size_t len);
-#endif
+#  endif /* DECL_MEMSET_EXPLICIT_IN_CONFIG_H */
+#endif /* !HAVE_MEMSET_EXPLICIT */
+
+#if !HAVE_DECL_FTELLO
+#  cmakedefine01 DECL_FTELLO_IN_CONFIG_H
+#  if DECL_FTELLO_IN_CONFIG_H
+#    if HAVE_STDDEF_H
+#      include <stddef.h>
+#    endif /* HAVE_STDDEF_H */
+#    if HAVE_STDIO_H
+#      include <stdio.h>
+#    endif /* HAVE_STDIO_H */
+#    if HAVE_SYS_TYPES_H
+#      include <sys/types.h>
+#    endif /* HAVE_STDDEF_H */
+  /* Do not force processing of string.in.h just to declare a single function. */
+  off_t ftello (FILE *fp);
+#  endif /* DECL_FTELLO_IN_CONFIG_H */
+#endif /* !HAVE_DECL_FTELLO */
 
 #if (defined(_MSC_VER) && (_MSC_VER >= 1900) && HAVE_SYS_STAT_H)
 #  define _CRT_INTERNAL_NONSTDC_NAMES 1
 #  include <sys/stat.h>
-
 #  ifndef S_ISCHR
 #   ifdef S_IFCHR
 #    define S_ISCHR(m) (((m) & S_IFMT) == S_IFCHR)
@@ -467,7 +483,6 @@
 #    define S_ISCHR(m) 0
 #   endif
 #  endif
-
 #  ifndef S_ISDIR
 #   ifdef S_IFDIR
 #    define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
@@ -475,7 +490,6 @@
 #    define S_ISDIR(m) 0
 #   endif
 #  endif
-
 #  ifndef S_ISREG
 #   ifdef S_IFREG
 #    define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
@@ -483,9 +497,7 @@
 #    define S_ISREG(m) 0
 #   endif
 #  endif
-
 #endif
-
 
 /* Please see the Gnulib manual for how to use these macros.
 
@@ -793,7 +805,6 @@
 # cmakedefine _XOPEN_SOURCE
 #endif
 
-
 /* Version number of package */
 #define VERSION "@PACKAGE_VERSION@"
 
@@ -827,7 +838,6 @@
 #else
 # define _GL_GNUC_PREREQ(major, minor) 0
 #endif
-
 
 /* Define to enable the declarations of ISO C 11 types and functions. */
 #cmakedefine _ISOC11_SOURCE
@@ -876,7 +886,6 @@
 # endif
 #endif
 
-
 /* Number of bits in time_t, on hosts where this is settable. */
 #cmakedefine _TIME_BITS
 
@@ -921,7 +930,6 @@
        that may clobber errno, it needs to save and restore the value of
        errno.  */
 #define _GL_ASYNC_SAFE
-
 
 /* Attributes.  */
 /* Define _GL_HAS_ATTRIBUTE only once, because on FreeBSD, with gcc < 5, if
@@ -997,7 +1005,8 @@
         - in C++ mode, inside extern "C" {}, still in newer clang++ versions
           <https://github.com/llvm/llvm-project/issues/101990>.
  */
-/* Define if, in a function declaration, the attributes in bracket syntax
+
+ /* Define if, in a function declaration, the attributes in bracket syntax
    [[...]] must come before the attributes in __attribute__((...)) syntax.
    If this is defined, it is best to avoid the bracket syntax, so that the
    various _GL_ATTRIBUTE_* can be cumulated on the same declaration in any
@@ -1011,6 +1020,7 @@
 #  define _GL_BRACKET_BEFORE_ATTRIBUTE 1
 # endif
 #endif
+
 /*
    2) We want that the _GL_ATTRIBUTE_* can be placed in a declaration
         - without 'extern', in C as well as in C++,
@@ -1269,6 +1279,7 @@
 #  define _GL_ATTRIBUTE_DEALLOC(f, i)
 # endif
 #endif
+
 /* If gnulib's <string.h> or <wchar.h> has already defined this macro, continue
    to use this earlier definition, since <stdlib.h> may not have been included
    yet.  */
@@ -1441,9 +1452,11 @@
 #  define _GL_ATTRIBUTE_MAYBE_UNUSED _GL_ATTRIBUTE_UNUSED
 # endif
 #endif
+
 /* Alternative spelling of this macro, for convenience and for
    compatibility with glibc/include/libc-symbols.h.  */
 #define _GL_UNUSED _GL_ATTRIBUTE_MAYBE_UNUSED
+
 /* Earlier spellings of this macro.  */
 #define _UNUSED_PARAMETER_ _GL_ATTRIBUTE_MAYBE_UNUSED
 
@@ -1665,7 +1678,6 @@
 # endif
 #endif
 
-
 /* _GL_UNUSED_LABEL; declares that it is not a programming mistake if the
    immediately preceding label is not used.  The compiler should not warn
    if the label is not used.  */
@@ -1709,7 +1721,6 @@
 # endif
 #endif
 
-
 /* In C++, there is the concept of "language linkage", that encompasses
     name mangling and function calling conventions.
     The following macros start and end a block of "C" linkage.  */
@@ -1720,7 +1731,6 @@
 # define _GL_BEGIN_C_LINKAGE
 # define _GL_END_C_LINKAGE
 #endif
-
 
 /* Work around a bug in Apple GCC 4.0.1 build 5465: In C99 mode, it supports
    the ISO C 99 semantics of 'extern inline' (unlike the GNU C semantics of
@@ -1747,7 +1757,6 @@
    avoids conditional jumps in all GCC versions >= 3.4.  */
 #define _GL_CMP(n1, n2) (((n1) > (n2)) - ((n1) < (n2)))
 
-
 /* Define to 'int' if <sys/types.h> does not define. */
 #cmakedefine mode_t
 
@@ -1761,6 +1770,7 @@
    nothing if this is not supported.  Do not define if restrict is
    supported only directly.  */
 #cmakedefine restrict
+
 /* Work around a bug in older versions of Sun C++, which did not
    #define __restrict__ or support _Restrict or __restrict__
    even though the corresponding Sun C compiler ended up with
@@ -1768,8 +1778,8 @@
    in the previous line.  This workaround can be removed once
    we assume Oracle Developer Studio 12.5 (2016) or later.  */
 #if defined __SUNPRO_CC && !defined __RESTRICT && !defined __restrict__
-# define _Restrict
-# define __restrict__
+# cmakedefine _Restrict
+# cmakedefine __restrict__
 #endif
 
 /* Define as 'unsigned int' if <stddef.h> doesn't define. */
@@ -1833,4 +1843,3 @@
 #if defined __GNUC__ && __GNUC__ >= 15 && !defined __clang__
 # pragma GCC diagnostic pop
 #endif
-
