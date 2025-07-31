@@ -1,4 +1,5 @@
 include(CheckCSourceCompiles)
+include(CheckCSourceRuns)
 include(CheckCXXSourceCompiles)
 include(CheckFunctionExists)
 include(CheckIncludeFiles)
@@ -8,23 +9,42 @@ include(CheckTypeSize)
 include(GNUInstallDirs)
 
 message(STATUS "CMAKE_EXECUTABLE_SUFFIX is '${CMAKE_EXECUTABLE_SUFFIX}'.")
+message(STATUS "CMAKE_C_COMPILE_FEATURES is '${CMAKE_C_COMPILE_FEATURES}'.")
+message(STATUS "CMAKE_CXX_COMPILE_FEATURES is '${CMAKE_CXX_COMPILE_FEATURES}'.")
 
-set(CHECK_HAVE_DYNAMIC_ARRAY_SOURCE [[
-int main(int n)
-{
-  int dynamic_array[n];
-}
-]])
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_DECL_STRERROR_R.c" CHECK_HAVE_DECL_STRERROR_R_SOURCE)
+check_c_source_compiles("${CHECK_HAVE_DECL_STRERROR_R_SOURCE}" HAVE_DECL_STRERROR_R)
+
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_DYNAMIC_ARRAY.cxx" CHECK_HAVE_DYNAMIC_ARRAY_SOURCE)
 check_cxx_source_compiles("${CHECK_HAVE_DYNAMIC_ARRAY_SOURCE}" HAVE_DYNAMIC_ARRAY)
 
-set(CHECK_HAVE_INCLUDE_NEXT_SUPPORT_SOURCE [[
-#include_next <stdio.h>
-int main()
-{
-  return 0;
-}
-]])
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_INCLUDE_NEXT_SUPPORT.c" CHECK_HAVE_INCLUDE_NEXT_SUPPORT_SOURCE)
 check_c_source_compiles("${CHECK_HAVE_INCLUDE_NEXT_SUPPORT_SOURCE}" HAVE_INCLUDE_NEXT_SUPPORT)
+
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_MEMSET_S.c" CHECK_HAVE_MEMSET_S_SOURCE)
+check_c_source_compiles("${CHECK_HAVE_MEMSET_S_SOURCE}" HAVE_MEMSET_S)
+
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_WCSDUP.c" CHECK_HAVE_WCSDUP_SOURCE)
+check_c_source_compiles("${CHECK_HAVE_WCSDUP_SOURCE}" HAVE_DECL_WCSDUP)
+check_c_source_compiles("${CHECK_HAVE_WCSDUP_SOURCE}" HAVE_WCSDUP)
+
+set(HAVE_MALLOC_0_NONNULL_TEST FALSE)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_MALLOC_0_NONNULL.c" CHECK_HAVE_MALLOC_0_NONNULL_SOURCE)
+check_c_source_runs("${CHECK_HAVE_MALLOC_0_NONNULL_SOURCE}" HAVE_MALLOC_0_NONNULL_TEST)
+if(HAVE_MALLOC_0_NONNULL_TEST)
+  set(HAVE_MALLOC_0_NONNULL TRUE)
+else()
+  set(HAVE_MALLOC_0_NONNULL FALSE)
+endif()
+
+set(HAVE_MALLOC_POSIX_TEST FALSE )
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_MALLOC_POSIX.c" CHECK_HAVE_MALLOC_POSIX_SOURCE)
+check_c_source_runs("${CHECK_HAVE_MALLOC_POSIX_SOURCE}" HAVE_MALLOC_POSIX_TEST)
+if(HAVE_MALLOC_POSIX_TEST)
+  set(HAVE_MALLOC_POSIX TRUE)
+else()
+  set(HAVE_MALLOC_POSIX FALSE)
+endif()
 
 if(HAVE_INCLUDE_NEXT_SUPPORT)
   set(INCLUDE_NEXT "include_next")
@@ -35,50 +55,6 @@ endif()
 set(NEXT_GETOPT_H "<getopt.h>")
 set(NEXT_UNISTD_H "<unistd.h>")
 set(NEXT_SYS_STAT_H "<sys/stat.h>")
-
-set(CHECK_HAVE_MEMSET_S_SOURCE [[
-#define __STDC_WANT_LIB_EXT1__ 1
-#include <string.h>
-int main()
-{
-  char buffer[10];
-  memset_s(buffer, sizeof(buffer), 0, sizeof(buffer));
-  return 0;
-}
-]])
-check_c_source_compiles("${CHECK_HAVE_MEMSET_S_SOURCE}" HAVE_MEMSET_S)
-
-set(CHECK_HAVE_DECL_STRERROR_R_SOURCE [[
-#include <string.h>
-#include <errno.h>
-
-int main()
-{
-  char buffer[1024];
-  // This will not compile if strerror_r does not return an int
-  int result = strerror_r(EACCES, buffer, sizeof(buffer));
-  (void)result; // Suppress unused variable warning
-  return 0;
-}
-]])
-check_c_source_compiles("${CHECK_HAVE_DECL_STRERROR_R_SOURCE}" HAVE_DECL_STRERROR_R)
-
-set(CHECK_HAVE_WCSDUP_SOURCE [[
-#include <wchar.h>
-#include <stdlib.h>
-int main()
-{
-  const wchar_t* original = L\"Hello\";
-  wchar_t* duplicated = wcsdup(original);
-  if (duplicated)
-  {
-    free(duplicated);
-  }
-  return 0;
-}
-]])
-check_c_source_compiles("${CHECK_HAVE_WCSDUP_SOURCE}" HAVE_WCSDUP)
-check_c_source_compiles("${CHECK_HAVE_WCSDUP_SOURCE}" HAVE_DECL_WCSDUP)
 
 check_function_exists(error HAVE_ERROR)
 check_function_exists(error_at_line HAVE_ERROR_AT_LINE)
@@ -126,68 +102,85 @@ check_symbol_exists(getexecname "stdlib.h" HAVE_GETEXECNAME)
 check_symbol_exists(lstat "sys/stat.h" HAVE_LSTAT)
 check_symbol_exists(xalloc_die "stdlib.h" HAVE_XALLOC_DIE)
 
-
 check_type_size(ptrdiff_t BITSIZEOF_PTRDIFF_T)
 check_type_size(size_t BITSIZEOF_SIZE_T)
 check_type_size(wchar_t BITSIZEOF_WCHAR_T)
 
 set(CMAKE_EXTRA_INCLUDE_FILES signal.h stdio.h stdint.h)
-set(CHECK_HAVE_SIGNED_SIG_ATOMIC_T_SOURCE [[
-#include <signal.h>
-#include <stdint.h>
-#include <stdio.h>
-
-int main()
-{
-  if (SIG_ATOMIC_MIN < 0)
-  {
-    printf("SIGNED");
-  }
-  else
-  {
-    printf("UNSIGNED");
-  }
-  return 0;
-}
-]])
 check_type_size("sig_atomic_t" BITSIZEOF_SIG_ATOMIC_T)
 check_type_size("sig_atomic_t" HAVE_SIG_ATOMIC_T)
 if(HAVE_SIG_ATOMIC_T)
   # Check if sig_atomic_t is signed
   message(STATUS "Checking if sig_atomic_t is signed...")
-  set(CMAKE_C_FLAGS_ORIGINAL "${CMAKE_C_FLAGS}")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSIG_ATOMIC_MIN_CHECK")
-  set(HAVE_SIGNED_SIG_ATOMIC_T_SOURCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/check_sig_atomic_signed.c")
-  set(HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/check_sig_atomic_signed${CMAKE_EXECUTABLE_SUFFIX}")
-  file(WRITE "${HAVE_SIGNED_SIG_ATOMIC_T_SOURCE_FILE}" "${CHECK_HAVE_SIGNED_SIG_ATOMIC_T_SOURCE}")
+  set(HAVE_SIGNED_SIG_ATOMIC_T_SOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_SIGNED_SIG_ATOMIC_T.c")
+  set(HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/check_HAVE_SIGNED_SIG_ATOMIC_T${CMAKE_EXECUTABLE_SUFFIX}")
   # Compile and run the C program
-  execute_process(COMMAND ${CMAKE_C_COMPILER} "${HAVE_SIGNED_SIG_ATOMIC_T_SOURCE_FILE}" -o "${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT_FILE}")
+  if(MSVC)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} /nologo ${HAVE_SIGNED_SIG_ATOMIC_T_SOURCE_FILE} "/Fe${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT_FILE}")
+  else()
+    execute_process(COMMAND ${CMAKE_C_COMPILER} "${HAVE_SIGNED_SIG_ATOMIC_T_SOURCE_FILE}" -o "${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT_FILE}")
+  endif()
   if(EXISTS "${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT_FILE}")
     execute_process(
       COMMAND "${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT_FILE}"
-      RESULT_VARIABLE SIG_ATOMIC_RESULT
-      OUTPUT_VARIABLE SIG_ATOMIC_SIGNED_OUTPUT
+      RESULT_VARIABLE HAVE_SIGNED_SIG_ATOMIC_TRESULT
+      OUTPUT_VARIABLE HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
-    if(SIG_ATOMIC_RESULT)
+    if(HAVE_SIGNED_SIG_ATOMIC_TRESULT)
       message(FATAL_ERROR "Failed to run the sig_atomic_t signed check program.")
     else()
-      string(STRIP "${SIG_ATOMIC_SIGNED_OUTPUT}" SIG_ATOMIC_SIGNED_OUTPUT)
-      message(STATUS "sig_atomic_t signed check output: ${SIG_ATOMIC_SIGNED_OUTPUT}")
+      string(STRIP "${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT}" HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT)
+      message(STATUS "sig_atomic_t signed check output: ${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT}")
     endif()
   else()
     message(FATAL_ERROR "Source file for sig_atomic_t signed check does not exist.")
   endif()
   # Set a CMake variable based on the output
-  if("${SIG_ATOMIC_SIGNED_OUTPUT}" STREQUAL "SIGNED")
+  if("${HAVE_SIGNED_SIG_ATOMIC_T_OUTPUT}" STREQUAL "SIGNED")
     set(HAVE_SIGNED_SIG_ATOMIC_T 1)
     message(STATUS "sig_atomic_t is signed.")
   else()
     set(HAVE_SIGNED_SIG_ATOMIC_T 0)
     message(STATUS "sig_atomic_t is unsigned.")
   endif()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_ORIGINAL}")
+endif()
+unset(CMAKE_EXTRA_INCLUDE_FILES)
+
+set(CMAKE_EXTRA_INCLUDE_FILES stddef.h stdint.h stdio.h stdlib.h)
+set(HAVE_MALLOC_PTRDIFF_SOURCE_FILE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_MALLOC_PTRDIFF.c")
+set(HAVE_MALLOC_PTRDIFF_OUTPUT_FILE "${CMAKE_CURRENT_BINARY_DIR}/check_HAVE_MALLOC_PTRDIFF${CMAKE_EXECUTABLE_SUFFIX}")
+# Compile and run the C program
+if(MSVC)
+  execute_process(COMMAND ${CMAKE_C_COMPILER} /nologo ${HAVE_MALLOC_PTRDIFF_SOURCE_FILE} "/Fe${HAVE_MALLOC_PTRDIFF_OUTPUT_FILE}")
+else()
+  execute_process(COMMAND ${CMAKE_C_COMPILER} "${HAVE_MALLOC_PTRDIFF_SOURCE_FILE}" -o "${HAVE_MALLOC_PTRDIFF_OUTPUT_FILE}")
+endif()
+if(EXISTS "${HAVE_MALLOC_PTRDIFF_OUTPUT_FILE}")
+  execute_process(
+    COMMAND "${HAVE_MALLOC_PTRDIFF_OUTPUT_FILE}"
+    RESULT_VARIABLE HAVE_MALLOC_PTRDIFF_RESULT
+    OUTPUT_VARIABLE HAVE_MALLOC_PTRDIFF_OUTPUT
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_STRIP_TRAILING_WHITESPACE)
+  if(HAVE_MALLOC_PTRDIFF_RESULT)
+    message(FATAL_ERROR "Failed to run the HAVE_MALLOC_PTRDIFF check program.")
+  else()
+    string(STRIP "${HAVE_MALLOC_PTRDIFF_OUTPUT}" HAVE_MALLOC_PTRDIFF_OUTPUT)
+    message(STATUS "HAVE_MALLOC_PTRDIFF check output: ${HAVE_MALLOC_PTRDIFF_OUTPUT}")
+  endif()
+else()
+  message(FATAL_ERROR "Source file for HAVE_MALLOC_PTRDIFF check does not exist.")
+endif()
+# Set a CMake variable based on the output
+if("${HAVE_MALLOC_PTRDIFF_OUTPUT}" STREQUAL "ALLOCATION_SUCCESS")
+  set(HAVE_MALLOC_PTRDIFF 1)
+  message(STATUS "ALLOCATION_SUCCESS.")
+else()
+  set(HAVE_MALLOC_PTRDIFF 0)
+  message(STATUS "ALLOCATION_FAILURE.")
 endif()
 unset(CMAKE_EXTRA_INCLUDE_FILES)
 
@@ -197,19 +190,7 @@ check_type_size(wint_t HAVE_WINT_T)
 unset(CMAKE_EXTRA_INCLUDE_FILES)
 
 if(HAVE_DECL_FTELLO)
-  set(CHECK_HAVE_DECL_FTELLO_SOURCE [[
-  #include <stdio.h>
-  int main()
-  {
-    FILE *fp = fopen(\"test.txt\", \"w\");
-    if (fp)
-    {
-      ftello(fp);
-      fclose(fp);
-    }
-    return 0;
-  }
-  ]])
+  file(READ "${CMAKE_CURRENT_SOURCE_DIR}/cmake/check_HAVE_FTELLO.c" CHECK_HAVE_DECL_FTELLO_SOURCE)
   check_c_source_compiles("${CHECK_HAVE_DECL_FTELLO_SOURCE}" HAVE_FTELLO)
 else()
   set(HAVE_DECL_FTELLO 0)

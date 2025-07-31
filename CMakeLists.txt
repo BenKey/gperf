@@ -2,16 +2,29 @@ cmake_minimum_required(VERSION 3.21)
 project(gperf LANGUAGES C CXX)
 
 # Set C standard
-set(CMAKE_C_STANDARD 17)
+if("c_std_23" IN_LIST CMAKE_C_COMPILE_FEATURES)
+  set(CMAKE_C_STANDARD 23)
+elseif("c_std_17" IN_LIST CMAKE_C_COMPILE_FEATURES)
+  set(CMAKE_C_STANDARD 17)
+endif()
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Set C++ standard if needed
-set(CMAKE_CXX_STANDARD 20)
+if("cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+  set(CMAKE_CXX_STANDARD 20)
+elseif("cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+  set(CMAKE_CXX_STANDARD 23)
+elseif("cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+  set(CMAKE_CXX_STANDARD 27)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake")
 
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+if(MSVC)
+  add_compile_options(/nologo)
+endif()
 
 include(gperf_package_info)
 include(gperf_configure_tests)
