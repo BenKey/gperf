@@ -619,46 +619,46 @@
 
 /* Name of package */
 #if !defined(PACKAGE)
-#  define PACKAGE "@PACKAGE_NAME_LIB@"
+#  cmakedefine PACKAGE "@PACKAGE_NAME_LIB@"
 #endif
 
 /* Define to the address where bug reports for this package should be sent. */
 #if !defined(PACKAGE_BUGREPORT)
-#  define PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
+#  cmakedefine PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@"
 #endif
 
 /* Define to the full name of this package. */
 #if !defined(PACKAGE_NAME)
-#  define PACKAGE_NAME "@PACKAGE_NAME_LIB@"
+#  cmakedefine PACKAGE_NAME "@PACKAGE_NAME_LIB@"
 #endif
 
 /* Define to the full name and version of this package. */
 #if !defined(PACKAGE_STRING)
-#  define PACKAGE_STRING "@PACKAGE_STRING_LIB@"
+#  cmakedefine PACKAGE_STRING "@PACKAGE_STRING_LIB@"
 #endif
 
 /* Define to the one symbol short name of this package. */
 #if !defined(PACKAGE_TARNAME)
-#  define PACKAGE_TARNAME "@PACKAGE_TARNAME@"
+#  cmakedefine PACKAGE_TARNAME "@PACKAGE_TARNAME@"
 #endif
 
 /* Define to the home page for this package. */
 #if !defined(PACKAGE_URL)
-#  define PACKAGE_URL "@PACKAGE_URL@"
+#  cmakedefine PACKAGE_URL "@PACKAGE_URL@"
 #endif
 
 /* Define to the version of this package. */
 #if !defined(PACKAGE_VERSION)
-#  define PACKAGE_VERSION "@PACKAGE_VERSION@"
+#  cmakedefine PACKAGE_VERSION "@PACKAGE_VERSION@"
 #endif
 
 /* Define to the type that is the result of default argument promotions of
    type mode_t. */
-#cmakedefine PROMOTED_MODE_T
+#cmakedefine PROMOTED_MODE_T @PROMOTED_MODE_T@
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'ptrdiff_t'. */
-#cmakedefine PTRDIFF_T_SUFFIX
+#cmakedefine PTRDIFF_T_SUFFIX @PTRDIFF_T_SUFFIX@
 
 /* Define to 1 if stat needs help when passed a file name with a trailing
    slash */
@@ -669,17 +669,17 @@
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'sig_atomic_t'. */
-#cmakedefine SIG_ATOMIC_T_SUFFIX
+#cmakedefine SIG_ATOMIC_T_SUFFIX @SIG_ATOMIC_T_SUFFIX@
 
 /* Define as the maximum value of type 'size_t', if the system doesn't define
    it. */
 #ifndef SIZE_MAX
-# cmakedefine SIZE_MAX
+# cmakedefine SIZE_MAX @SIZE_MAX@
 #endif
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'size_t'. */
-#cmakedefine SIZE_T_SUFFIX
+#cmakedefine SIZE_T_SUFFIX @SIZE_T_SUFFIX@
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -687,7 +687,7 @@
 	STACK_DIRECTION > 0 => grows toward higher addresses
 	STACK_DIRECTION < 0 => grows toward lower addresses
 	STACK_DIRECTION = 0 => direction of growth unknown */
-#cmakedefine STACK_DIRECTION
+#cmakedefine STACK_DIRECTION @STACK_DIRECTION@
 
 /* Define to 1 if the 'S_IS*' macros in <sys/stat.h> do not work properly. */
 #cmakedefine01 STAT_MACROS_BROKEN
@@ -709,7 +709,6 @@
 #undef/**/__STDC_WANT_LIB_EXT1__
 #define __STDC_WANT_LIB_EXT1__ 1
 #endif
-
 
 /* Enable extensions on AIX, Interix, z/OS.  */
 #ifndef _ALL_SOURCE
@@ -753,11 +752,11 @@
 #endif
 /* Define to 1 if needed for POSIX-compatible behavior.  */
 #ifndef _POSIX_SOURCE
-# cmakedefine _POSIX_SOURCE
+# cmakedefine _POSIX_SOURCE @_POSIX_SOURCE@
 #endif
 /* Define to 2 if needed for POSIX-compatible behavior.  */
 #ifndef _POSIX_1_SOURCE
-# cmakedefine _POSIX_1_SOURCE
+# cmakedefine _POSIX_1_SOURCE @_POSIX_1_SOURCE@
 #endif
 /* Enable POSIX-compatible threading on Solaris.  */
 #ifndef _POSIX_PTHREAD_SEMANTICS
@@ -806,18 +805,18 @@
 #endif
 
 /* Version number of package */
-#define VERSION "@PACKAGE_VERSION@"
+#cmakedefine VERSION "@PACKAGE_VERSION@"
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'wchar_t'. */
-#cmakedefine WCHAR_T_SUFFIX
+#cmakedefine WCHAR_T_SUFFIX @WCHAR_T_SUFFIX@
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'wint_t'. */
-#cmakedefine WINT_T_SUFFIX
+#cmakedefine WINT_T_SUFFIX @WINT_T_SUFFIX@
 
 /* Number of bits in a file offset, on hosts where this is settable. */
-#cmakedefine _FILE_OFFSET_BITS
+#cmakedefine _FILE_OFFSET_BITS @_FILE_OFFSET_BITS@
 
 /* True if the compiler says it groks GNU C version MAJOR.MINOR.
     Except that
@@ -887,14 +886,14 @@
 #endif
 
 /* Number of bits in time_t, on hosts where this is settable. */
-#cmakedefine _TIME_BITS
+#cmakedefine _TIME_BITS @_TIME_BITS@
 
 /* For standard stat data types on VMS. */
-#cmakedefine _USE_STD_STAT
+#cmakedefine01 _USE_STD_STAT
 
 /* Define to rpl_ if the getopt replacement functions and variables should be
    used. */
-#cmakedefine __GETOPT_PREFIX
+#cmakedefine __GETOPT_PREFIX @__GETOPT_PREFIX@
 
 /* Define to 1 on platforms where this makes time_t a 64-bit type. */
 #cmakedefine01 __MINGW_USE_VC2005_COMPAT
@@ -1758,18 +1757,18 @@
 #define _GL_CMP(n1, n2) (((n1) > (n2)) - ((n1) < (n2)))
 
 /* Define to 'int' if <sys/types.h> does not define. */
-#cmakedefine mode_t
+#cmakedefine mode_t @MODE_T_TYPE@
 
 /* Define to the type of st_nlink in struct stat, or a supertype. */
-#cmakedefine nlink_t
+#cmakedefine nlink_t @NLINK_T_TYPE@
 
 /* Define as a signed integer type capable of holding a process identifier. */
-#cmakedefine pid_t
+#cmakedefine pid_t @PID_T_TYPE@
 
 /* Define to the equivalent of the C99 'restrict' keyword, or to
    nothing if this is not supported.  Do not define if restrict is
    supported only directly.  */
-#cmakedefine restrict
+#cmakedefine restrict @RESTRICT_KEYWORD@
 
 /* Work around a bug in older versions of Sun C++, which did not
    #define __restrict__ or support _Restrict or __restrict__
@@ -1783,10 +1782,10 @@
 #endif
 
 /* Define as 'unsigned int' if <stddef.h> doesn't define. */
-#cmakedefine size_t
+#cmakedefine size_t @SIZE_T_TYPE@
 
 /* Define as a signed type of the same size as size_t. */
-#cmakedefine ssize_t
+#cmakedefine ssize_t @SSIZE_T_TYPE@
 
 #if !(defined __cplusplus \
       ? 1 \

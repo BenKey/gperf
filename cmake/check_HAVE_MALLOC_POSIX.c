@@ -1,5 +1,7 @@
-#include <stdlib.h>
 #include <errno.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {

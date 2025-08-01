@@ -1,5 +1,6 @@
 set(GUARD_PREFIX "GPERF")
 
+set(PACKAGE "gperf")
 set(PACKAGE_BUGREPORT "bug-gnu-gperf@gnu.org")
 set(PACKAGE_NAME "gperf")
 set(PACKAGE_STRING "gperf 3.3")
